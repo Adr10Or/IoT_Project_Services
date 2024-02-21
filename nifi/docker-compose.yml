@@ -9,6 +9,7 @@ x-logging:
 
 services:
   nifi:
+    build: .
     image: apache/nifi:1.14.0
     ports:
       - 8443:8443
