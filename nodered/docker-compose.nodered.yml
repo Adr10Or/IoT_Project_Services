@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  node-red:
+    image: nodered/node-red:latest
+    user: "1001:1001"
+    ports:
+      - "1880:1880"
+    volumes:
+      - node-red-data:/data
+      - ./certs:/data/certs:ro
+      - ./settings.js:/data/settings.js
+      - ./flows.json:/data/flows.json
+    env_file:
+      - node-red.env
+    networks:
+      - mynet
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5' # Limita el uso de CPU a 0.5 CPUs
+          memory: 256M # Limita la memoria a 256 MB
+        reservations:
+          cpus: '0.25' # Reserva 0.25 CPUs
+          memory: 128M # Reserva 128 MB de memoria
+
+volumes:
+  node-red-data:
+
+networks:
+  mynet:

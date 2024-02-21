@@ -1,0 +1,286 @@
+[
+    {
+        "id": "f6f2187d.f17ca8",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "686cdc1f35e147d3",
+        "type": "Kafka Consumer",
+        "z": "f6f2187d.f17ca8",
+        "name": "kafkaConsumer",
+        "broker": "203dc1f09696753a",
+        "regex": false,
+        "topics": [
+            {
+                "topic": "epic.alerts",
+                "offset": 0,
+                "partition": 0
+            }
+        ],
+        "groupId": "kafka-node-group",
+        "autoCommit": "true",
+        "autoCommitIntervalMs": 5000,
+        "fetchMaxWaitMs": 100,
+        "fetchMinBytes": 1,
+        "fetchMaxBytes": 1048576,
+        "fromOffset": 0,
+        "encoding": "utf8",
+        "keyEncoding": "utf8",
+        "connectionType": "Consumer",
+        "convertToJson": false,
+        "x": 120,
+        "y": 380,
+        "wires": [
+            [
+                "127dee2cdf9ba15a"
+            ]
+        ]
+    },
+    {
+        "id": "b4aa56f3d0c772ca",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 380,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "127dee2cdf9ba15a",
+        "type": "json",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 290,
+        "y": 420,
+        "wires": [
+            [
+                "da6d170347d0cf56"
+            ]
+        ]
+    },
+    {
+        "id": "25a69ba57581bc11",
+        "type": "ui_template",
+        "z": "f6f2187d.f17ca8",
+        "group": "4d6046fae55a96e0",
+        "name": "",
+        "order": 1,
+        "width": 14,
+        "height": 6,
+        "format": "<style>\n    .car-alert {\n        background-color: #f8f8f8;\n        /* Light grey background */\n        border-left: 5px solid #2196F3;\n        /* Blue border */\n        margin: 10px 0;\n        padding: 15px;\n        border-radius: 5px;\n        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);\n        /* Slight shadow */\n    }\n\n    .car-alert h3 {\n        color: #333;\n        /* Dark grey color for the text */\n    }\n\n    .car-alert p {\n        font-size: 1em;\n        color: #666;\n        /* Medium grey color for the text */\n    }\n</style>\n\n<div ng-if=\"msg.payload\" class=\"car-alert\">\n    <h3>New Car Alert!</h3>\n    <p><strong>Make:</strong> {{msg.payload.Make}}</p>\n    <p><strong>Model:</strong> {{msg.payload.Model}}</p>\n    <p><strong>Year:</strong> {{msg.payload.Year}}</p>\n    <p><strong>Category:</strong> {{msg.payload.Category}}</p>\n    <p><strong>Received At:</strong> {{msg.timestamp}}</p>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 520,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "da6d170347d0cf56",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "function 1",
+        "func": "let now = new Date();\nmsg.timestamp = now.toLocaleString(); // Añade la hora actual en formato local\nreturn msg; // Retorna el mensaje modificado",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 500,
+        "wires": [
+            [
+                "25a69ba57581bc11"
+            ]
+        ]
+    },
+    {
+        "id": "9dbb3e73e18e95e1",
+        "type": "mqtt in",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "topic": "DB",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "f7aec56b909219c6",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 90,
+        "y": 600,
+        "wires": [
+            [
+                "cb8b28186703acba"
+            ]
+        ]
+    },
+    {
+        "id": "b0094efcca587dbb",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 420,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "cb8b28186703acba",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "function 2",
+        "func": "// Obtener los datos del JSON de entrada\nvar rows = msg.payload.rows;\n\n// Variables para almacenar las marcas y \nvar conteo = {};\n\n// Iterar a través de los datos del JSON\nrows.forEach(function(row) {\n    var doc = row.doc;\n    var make = doc.Make;\n\n    if (conteo[make]) {\n        conteo[make]++;\n    } else {\n        conteo[make] = 1;\n    }\n});\n\n// Crear la estructura de datos\nvar data = [];\n\n\nfor (var brand in conteo) {\n    data.push({ brand: brand, count: conteo[brand] });\n}\nvar brands = [];\nvar counts=[];\nvar input = data;\nif (Array.isArray(input)) {\n    input.forEach(function(item) {\n        if (item.brand && item.count) {\n            brands.push(item.brand);\n            counts.push(item.count);\n        }\n    });\n}\n\nvar output = [{ \"series\": [\"autos\"], \"data\": [counts], \"labels\": brands }];\nmsg.payload = output;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 200,
+        "y": 700,
+        "wires": [
+            [
+                "4e55b517baa1daea",
+                "b0094efcca587dbb"
+            ]
+        ]
+    },
+    {
+        "id": "4e55b517baa1daea",
+        "type": "ui_chart",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "group": "4d6046fae55a96e0",
+        "order": 19,
+        "width": 0,
+        "height": 0,
+        "label": "HISTORIAL",
+        "chartType": "pie",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 390,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "203dc1f09696753a",
+        "type": "Kafka Broker",
+        "name": "",
+        "hosts": [
+            {
+                "host": "kafka-1",
+                "port": 29092
+            }
+        ],
+        "hostsEnvVar": "",
+        "connectTimeout": "10000",
+        "requestTimeout": "30000",
+        "autoConnect": "true",
+        "idleConnection": "5",
+        "reconnectOnIdle": "true",
+        "maxAsyncRequests": "10",
+        "checkInterval": "10",
+        "selfSign": true,
+        "usetls": false,
+        "useCredentials": false
+    },
+    {
+        "id": "4d6046fae55a96e0",
+        "type": "ui_group",
+        "name": "Default",
+        "tab": "d571602526fd7c63",
+        "order": 1,
+        "disp": true,
+        "width": 14,
+        "collapse": false
+    },
+    {
+        "id": "f7aec56b909219c6",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "mosquitto",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "DB",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "d571602526fd7c63",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
