@@ -8,14 +8,27 @@ Este proyecto establece un entorno IoT implementando una serie de servicios esen
 
 El repositorio está dividido en subdirectorios, cada uno correspondiente a un servicio particular. Dentro de cada subdirectorio se encuentra un `docker-compose.yml` que facilita el despliegue individualizado del servicio.
 
-## Configuración de Seguridad
+## Gestión de Configuración y Seguridad
 
-Las credenciales y parámetros de configuración de seguridad se manejan a través de archivos `.env` que se incluyen en el repositorio para fines de demostración y prueba. 
+Las credenciales y los parámetros de configuración de seguridad son manejados a través de archivos `.env` incluidos en el repositorio con fines de demostración y prueba. 
 
-**Advertencia de Seguridad**: Los archivos `.env` se proporcionan abiertamente para revisión. Para entornos de producción:
+### Advertencia de Seguridad
 
-- Implementa `.gitignore` para omitir archivos `.env` en el sistema de control de versiones.
-- Gestiona las credenciales de forma segura, preferiblemente utilizando un gestor de secretos como HashiCorp Vault.
+Los archivos `.env` se proporcionan de manera abierta para facilitar la revisión. Sin embargo, para entornos de producción, es crucial adoptar prácticas más seguras:
+
+- **Exclusión de Archivos Sensibles**: Implementa un archivo `.gitignore` para excluir archivos `.env` del sistema de control de versiones, evitando así la exposición accidental de secretos.
+
+- **Gestión Avanzada de Secretos**: Para una seguridad óptima, se recomienda gestionar las credenciales utilizando soluciones especializadas en la gestión de secretos. Herramientas como HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, y Google Cloud Secret Manager ofrecen mecanismos robustos para almacenar, acceder y auditar secretos en entornos de producción.
+
+- **Uso de Archivos `passwd` para Contraseñas**: En algunos servicios, especialmente aquellos relacionados con la autenticación, es común colocar un archivo `passwd` que contiene las contraseñas en formato hasheado. Este enfoque permite una gestión más segura de las contraseñas, ya que solo se almacenan en forma hasheada y pueden ser modificadas o gestionadas de manera segura sin exponer las contraseñas en texto plano. Es fundamental asegurar que estos archivos `passwd` también estén protegidos adecuadamente y no se incluyan en el control de versiones.
+
+### Mejores Prácticas para la Gestión de Secretos
+
+- **Auditoría Regular**: Realiza auditorías periódicas de los secretos y credenciales para asegurar que solo las credenciales necesarias estén en uso y que las antiguas o innecesarias sean rotadas o revocadas.
+- **Minimizar la Exposición**: Aplica el principio de menor privilegio asegurando que los servicios y aplicaciones solo tengan acceso a los secretos que estrictamente necesitan para operar.
+- **Seguridad en el Transporte**: Asegura la comunicación entre tus aplicaciones y el gestor de secretos utilizando cifrado de extremo a extremo para evitar la exposición de secretos durante la transmisión.
+
+La adopción de estas prácticas y herramientas mejora significativamente la seguridad de los entornos de desarrollo y producción, protegiendo la infraestructura crítica y los datos sensibles contra accesos no autorizados y posibles brechas de seguridad.
 
 ## Pruebas y Seguridad
 
